@@ -1,0 +1,207 @@
+{
+  "subject": "🍎 Welcome to RipeNRed Family, {{customerName}}! 🌟",
+  "content": {
+    "welcomeMessage": {
+      "title": "Welcome to RipeNRed!",
+      "customerName": "{{customerName}}",
+      "mainImage": "https://res.cloudinary.com/dwpvgqh74/image/upload/v1755241640/ripenred1_h4z0wf.png",
+      "greeting": "Hello {{customerName}}! 👋",
+      "message": "We're absolutely thrilled to welcome you to the RipeNRed family! 🎉 You've just joined thousands of happy customers who trust us for the freshest, highest quality fruits and vegetables. From farm-fresh apples to organic leafy greens, we're here to deliver nature's best right to your doorstep."
+    },
+    "brandingSection": {
+      "welcomeBadge": "✨ Welcome Aboard ✨",
+      "mainTitle": "Welcome to RipeNRed!",
+      "subtitle": "Your journey to fresh, premium produce starts here",
+      "companyDescription": "Premium Fresh Produce Destination"
+    },
+    "features": [
+      {
+        "icon": "🍎",
+        "title": "Premium Quality",
+        "description": "Hand-picked fresh produce sourced directly from trusted farms",
+        "highlight": true
+      },
+      {
+        "icon": "🚚",
+        "title": "Fast Delivery",
+        "description": "Same-day delivery available to keep your fruits at peak freshness",
+        "highlight": true
+      },
+      {
+        "icon": "🌱",
+        "title": "100% Organic",
+        "description": "Certified organic options for a healthier lifestyle",
+        "highlight": true
+      },
+      {
+        "icon": "💝",
+        "title": "Special Offers",
+        "description": "Exclusive deals and seasonal discounts for our valued members",
+        "highlight": true
+      }
+    ],
+    "benefits": [
+      "🍎 Premium quality fruits and vegetables delivered fresh daily",
+      "🚚 Lightning-fast delivery within 2-4 hours of ordering",
+      "🌱 100% organic and pesticide-free produce options",
+      "💝 Exclusive member discounts up to 25% off seasonal items",
+      "📱 Easy mobile app for convenient shopping anytime",
+      "🏆 Award-winning customer service and satisfaction guarantee"
+    ],
+    "personalizedContent": {
+      "customerName": "{{customerName}}",
+      "welcomeNote": "Dear {{customerName}}, thank you for choosing RipeNRed as your trusted partner for fresh, premium produce!",
+      "membershipDetails": {
+        "status": "Premium Member",
+        "joinDate": "{{joinDate}}",
+        "membershipId": "{{membershipId}}",
+        "specialPerks": [
+          "Free delivery on orders over $50",
+          "Early access to seasonal produce",
+          "Exclusive recipe collections",
+          "Priority customer support"
+        ]
+      }
+    },
+    "callToAction": {
+      "title": "Ready to Start Shopping? 🛒",
+      "description": "Explore our fresh produce collection and discover the RipeNRed difference!",
+      "primaryButton": {
+        "text": "Explore Fresh Produce",
+        "url": "{{shopUrl}}",
+        "style": "primary"
+      },
+      "secondaryButton": {
+        "text": "View Special Offers",
+        "url": "{{offersUrl}}",
+        "style": "secondary"
+      },
+      "additionalLinks": [
+        {
+          "text": "Download Mobile App",
+          "url": "{{appUrl}}"
+        },
+        {
+          "text": "Follow Recipe Blog",
+          "url": "{{blogUrl}}"
+        }
+      ]
+    },
+    "socialProof": {
+      "testimonials": [
+        {
+          "customer": "Sarah M.",
+          "rating": 5,
+          "comment": "Best quality produce I've ever received! Always fresh and delivered on time.",
+          "location": "New York"
+        },
+        {
+          "customer": "Mike R.",
+          "rating": 5,
+          "comment": "RipeNRed has transformed the way we eat. Amazing organic selection!",
+          "location": "California"
+        }
+      ],
+      "statistics": {
+        "happyCustomers": "50,000+",
+        "deliveriesCompleted": "500,000+",
+        "averageRating": "4.9/5",
+        "citiesServed": "25+"
+      }
+    },
+    "nutritionalInfo": {
+      "dailyTip": "Did you know? Eating 5 servings of fruits and vegetables daily can reduce your risk of chronic diseases by 20%! 🌟",
+      "seasonalHighlight": {
+        "title": "This Season's Special: Fresh Organic Apples 🍎",
+        "description": "Rich in fiber, vitamin C, and antioxidants. Perfect for snacking or baking!",
+        "nutritionalBenefits": [
+          "High in dietary fiber for digestive health",
+          "Rich in vitamin C for immune support",
+          "Contains powerful antioxidants",
+          "Low in calories, high in nutrients"
+        ]
+      }
+    },
+    "supportInfo": {
+      "customerService": {
+        "email": "{{supportEmail}}",
+        "phone": "+1-800-RIPE-RED",
+        "hours": "Mon-Sat: 7AM-8PM, Sun: 9AM-6PM",
+        "liveChat": "Available 24/7 on our website"
+      },
+      "helpfulLinks": [
+        {
+          "title": "Delivery Information",
+          "url": "{{deliveryInfoUrl}}"
+        },
+        {
+          "title": "Storage Tips",
+          "url": "{{storageTipsUrl}}"
+        },
+        {
+          "title": "Nutrition Guide",
+          "url": "{{nutritionGuideUrl}}"
+        }
+      ]
+    },
+    "footer": {
+      "companyName": "RipeNRed",
+      "tagline": "Your Trusted Partner for Fresh Produce",
+      "logoUrl": "https://res.cloudinary.com/dwpvgqh74/image/upload/v1755241862/logo2_plbtj1.png",
+      "address": {
+        "street": "123 Fresh Market Lane",
+        "city": "Garden City",
+        "state": "NY",
+        "zipCode": "10001"
+      },
+      "socialMedia": [
+        {
+          "platform": "Facebook",
+          "icon": "📘",
+          "url": "{{facebookUrl}}"
+        },
+        {
+          "platform": "Instagram",
+          "icon": "📷",
+          "url": "{{instagramUrl}}"
+        },
+        {
+          "platform": "Twitter",
+          "icon": "🐦",
+          "url": "{{twitterUrl}}"
+        },
+        {
+          "platform": "YouTube",
+          "icon": "📺",
+          "url": "{{youtubeUrl}}"
+        }
+      ],
+      "legalLinks": [
+        {
+          "title": "Privacy Policy",
+          "url": "{{privacyUrl}}"
+        },
+        {
+          "title": "Terms of Service",
+          "url": "{{termsUrl}}"
+        },
+        {
+          "title": "Unsubscribe",
+          "url": "{{unsubscribeUrl}}"
+        }
+      ]
+    },
+    "styling": {
+      "primaryColor": "#a91101",
+      "secondaryColor": "#d32f2f",
+      "accentColor": "#ff5722",
+      "fontFamily": {
+        "primary": "Poppins",
+        "secondary": "Inter",
+        "decorative": "Dancing Script"
+      },
+      "theme": "fresh_produce",
+      "layout": "modern_gradient"
+    }
+  }
+}
