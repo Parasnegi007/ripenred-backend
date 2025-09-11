@@ -15,6 +15,7 @@ class PhonePeService {
         this.baseUrl = process.env.PHONEPE_BASE_URL;
         this.authToken = null;
         this.tokenExpiry = null;
+        this.authUrl = process.env.PHONEPE_AUTH_URL || 'https://api.phonepe.com/apis/identity-manager/';
         
         // Request configuration
         this.axiosConfig = {
@@ -131,7 +132,7 @@ class PhonePeService {
 
         const requestFunc = async () => {
             const response = await axios.post(
-                `${this.baseUrl}/v1/oauth/token`,
+                `${this.authUrl}/v1/oauth/token`,
                 new URLSearchParams({
                     client_id: this.clientId,
                     client_secret: this.clientSecret,

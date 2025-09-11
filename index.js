@@ -61,8 +61,9 @@ app.use(helmet({
         "https://lumberjack.razorpay.com", // Add Razorpay tracking
         "https://www.google-analytics.com", // Add Google Analytics
         "https://analytics.google.com", // Add Google Analytics
-        "http://localhost:5000",
-        "https://localhost:5000"
+        "https://ripenred.com",
+        "https://www.ripenred.com",
+        "https://seller.ripenred.com"
       ],
       frameSrc: [
         "'self'", 
@@ -113,14 +114,25 @@ const sellerRoutes = require("./seller-backend/routes/sellerRoutes");
 const authSeller = require("./middleware/authSeller");
 const invoiceRoutes = require('./routes/invoiceRoutes');
 
-// ✅ Connect to MongoDB (LOCAL)
+// ✅ Connect to MongoDB
 connectDB();
 
-// ✅ Enable CORS for local use (Allow all origins)
-app.use(cors());
+// ✅ Enable CORS for production (Restrict to specific domains)
+const corsOptions = {
+  origin: [
+    process.env.FRONTEND_URL || 'https://ripenred.com',
+    'https://www.ripenred.com',
+    'https://seller.ripenred.com'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with']
+};
+app.use(cors(corsOptions));
 
-// Middleware to parse JSON (must be before routes)
-// app.use(express.json()); // This line is now redundant as express.json() is called above
+// Trust proxy for production (when behind reverse proxy/nginx)
+app.set('trust proxy', 1);
 
 // ✅ Register Routes
 app.use('/api/users', require('./routes/userRoutes'));       // 🔹 User Routes
@@ -133,7 +145,7 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes')); // 🔹 Notification Routes
 app.use('/api/emails', require('./routes/emailRoutes')); // 🔹 Email Routes
 app.use('/config', require('./routes/configRoutes')); // 🔹 Frontend Config Route
-app.use('store-copy/store/assets/images', express.static(path.join(__dirname, '../store/assets/images')));
+app.use('/store/assets/images', express.static(path.join(__dirname, '../store/assets/images')));
 app.use('/assets', express.static(path.join(__dirname, 'assets'))); // 🔹 Backend Assets Route for Email Images
 app.use("/api/sellers", sellerRoutes);
 
