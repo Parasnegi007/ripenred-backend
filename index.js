@@ -63,7 +63,9 @@ app.use(helmet({
         "https://analytics.google.com", // Add Google Analytics
         "https://ripenred.com",
         "https://www.ripenred.com",
-        "https://seller.ripenred.com"
+        "https://seller.ripenred.com",
+        "https://cdn.jsdelivr.net", // Add jsdelivr for source maps
+        "https://cdnjs.cloudflare.com" // Add cdnjs for source maps
       ],
       frameSrc: [
         "'self'", 
@@ -144,7 +146,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes')); // 🔹 Notification Routes
 app.use('/api/emails', require('./routes/emailRoutes')); // 🔹 Email Routes
-app.use('/config', require('./routes/configRoutes')); // 🔹 Frontend Config Route
+app.use('/api/config', require('./routes/configRoutes')); // 🔹 Frontend Config Route
 app.use('/store/assets/images', express.static(path.join(__dirname, '../store/assets/images')));
 app.use('/assets', express.static(path.join(__dirname, 'assets'))); // 🔹 Backend Assets Route for Email Images
 app.use("/api/sellers", sellerRoutes);

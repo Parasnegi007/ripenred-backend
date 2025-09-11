@@ -1540,7 +1540,8 @@ router.get('/phonepe-return/:orderId', asyncHandler(async (req, res) => {
             return res.redirect(`/store/order-confirmation.html?error=order_cancelled&orderId=${orderId}`);
         }
         
-        const actualTransactionId = transactionId || order.merchantTransactionId || order.transactionId;
+        const actualTransactionId = order.merchantTransactionId || transactionId || order.transactionId;
+        
         
         if (!actualTransactionId) {
             console.error(`❌ No transaction ID found for order ${orderId}`);
