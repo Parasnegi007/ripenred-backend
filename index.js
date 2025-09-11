@@ -16,65 +16,9 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 
-// Security middleware
+// Temporarily disable CSP for debugging
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: [
-        "'self'", 
-        "'unsafe-inline'", 
-        "https://cdnjs.cloudflare.com",
-        "https://fonts.googleapis.com",
-        "https://cdn.jsdelivr.net",
-        "https://unpkg.com" // Add unpkg for Leaflet CSS
-      ],
-      scriptSrc: [
-        "'self'", 
-        "'unsafe-inline'", 
-        "'unsafe-eval'", // Allow eval for some libraries
-        "https://checkout.razorpay.com", 
-        "https://unpkg.com",
-        "https://cdnjs.cloudflare.com",
-        "https://cdn.jsdelivr.net",
-        "https://cdn.socket.io",
-        "https://code.jquery.com", // Add jQuery CDN
-        "https://ajax.googleapis.com", // Add Google CDN
-        "https://www.googletagmanager.com" // Add Google Analytics
-      ],
-      "script-src-attr": ["'unsafe-inline'"], // Allow inline event handlers
-      "script-src-elem": [
-        "'self'",
-        "'unsafe-inline'",
-        "https://checkout.razorpay.com", 
-        "https://unpkg.com",
-        "https://cdnjs.cloudflare.com",
-        "https://cdn.jsdelivr.net",
-        "https://code.jquery.com",
-        "https://ajax.googleapis.com",
-        "https://www.googletagmanager.com" // Add Google Analytics
-      ],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
-      connectSrc: [
-        "'self'", 
-        "https://api.postalpincode.in",
-        "https://lumberjack.razorpay.com", // Add Razorpay tracking
-        "https://www.google-analytics.com", // Add Google Analytics
-        "https://analytics.google.com", // Add Google Analytics
-        "https://ripenred.com",
-        "https://www.ripenred.com",
-        "https://seller.ripenred.com",
-        "https://cdn.jsdelivr.net", // Add jsdelivr for source maps
-        "https://cdnjs.cloudflare.com" // Add cdnjs for source maps
-      ],
-      frameSrc: [
-        "'self'", 
-        "https://checkout.razorpay.com",
-        "https://api.razorpay.com" // Add Razorpay API for iframe
-      ],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"]
-    }
-  },
+  contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false
 }));
 
@@ -121,17 +65,48 @@ connectDB();
 
 // ✅ Enable CORS for production (Restrict to specific domains)
 const corsOptions = {
-  origin: [
-    process.env.FRONTEND_URL || 'https://ripenred.com',
-    'https://www.ripenred.com',
-    'https://seller.ripenred.com'
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      process.env.FRONTEND_URL || 'https://ripenred.com',
+      'https://www.ripenred.com',
+      'https://seller.ripenred.com',
+      'http://localhost:3000',
+      'http://localhost:5000',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:5000'
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('🚫 CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'x-requested-with',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'X-CSRF-Token',
+    'X-Idempotency-Key'
+  ],
+  exposedHeaders: ['Content-Length', 'X-Kuma-Revision']
 };
+
+// Apply CORS before routes
 app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
 
 // Trust proxy for production (when behind reverse proxy/nginx)
 app.set('trust proxy', 1);
@@ -157,6 +132,15 @@ app.use('/seller', express.static(path.join(__dirname, '../seller-dashboard')));
 
 // 🔄 Serve main store as static files  
 app.use('/store', express.static(path.join(__dirname, '../store')));
+
+// ✅ CORS Test Endpoint
+app.get('/api/cors-test', (req, res) => {
+  res.status(200).json({ 
+    message: 'CORS is working!',
+    origin: req.headers.origin || 'no-origin',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // ✅ Health Check Endpoint
 app.get('/health', (req, res) => {

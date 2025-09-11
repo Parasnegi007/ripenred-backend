@@ -763,36 +763,147 @@ router.get("/getAddresses", authMiddleware, async (req, res) => {
 
 // Route to save address for a guest user
 router.post("/guest/addAddress", async (req, res) => {
+    console.log('🔍 Guest address save request:', {
+        body: { ...req.body, phone: req.body.phone ? '***' : undefined },
+        userAgent: req.headers['user-agent'],
+        timestamp: new Date().toISOString()
+    });
+    
     try {
         const { name, email, phone, street, city, state, zipcode, country, latitude, longitude } = req.body;
 
-        if (!name || !email || !phone || !street || !city || !state || !zipcode || !country) {
-            return res.status(400).json({ message: "All fields are required!" });
+        // Enhanced validation with detailed error messages
+        const missingFields = [];
+        if (!name) missingFields.push('name');
+        if (!email) missingFields.push('email');
+        if (!phone) missingFields.push('phone');
+        if (!street) missingFields.push('street');
+        if (!city) missingFields.push('city');
+        if (!state) missingFields.push('state');
+        if (!zipcode) missingFields.push('zipcode');
+        if (!country) missingFields.push('country');
+
+        if (missingFields.length > 0) {
+            console.log('❌ Missing required fields:', missingFields);
+            return res.status(400).json({ 
+                message: `Missing required fields: ${missingFields.join(', ')}`,
+                missingFields 
+            });
         }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            console.log('❌ Invalid email format:', email);
+            return res.status(400).json({ message: "Invalid email format" });
+        }
+
+        // Validate phone format (10 digits)
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone.replace(/\D/g, ''))) {
+            console.log('❌ Invalid phone format:', phone);
+            return res.status(400).json({ message: "Phone number must be 10 digits" });
+        }
+
+        console.log('✅ All validations passed, processing address save...');
 
         // Check if guest user already exists based on email
         let guestUser = await UnregModel.findOne({ email });
+        console.log('🔍 Existing guest user:', guestUser ? 'found' : 'not found');
 
         if (!guestUser) {
             // Create a new guest user entry if not found
             guestUser = new UnregModel({ name, email, phone, address: [] });
+            console.log('✅ Created new guest user');
+        } else {
+            // Update name and phone in case they changed
+            guestUser.name = name;
+            guestUser.phone = phone;
+            console.log('✅ Updated existing guest user info');
         }
 
         // ✅ Remove empty address entries before adding a new one
+        const originalAddressCount = guestUser.address.length;
         guestUser.address = guestUser.address.filter(addr =>
             addr.street && addr.city && addr.state && addr.zipcode && addr.country
         );
+        console.log(`🧹 Cleaned addresses: ${originalAddressCount} -> ${guestUser.address.length}`);
+
+        // ✅ Prepare new address object
+        const newAddress = { 
+            street: street.trim(), 
+            city: city.trim(), 
+            state: state.trim(), 
+            zipcode: zipcode.trim(), 
+            country: country.trim()
+        };
+
+        // Add coordinates if provided and valid
+        if (latitude && longitude && 
+            !isNaN(parseFloat(latitude)) && !isNaN(parseFloat(longitude))) {
+            newAddress.latitude = parseFloat(latitude);
+            newAddress.longitude = parseFloat(longitude);
+            console.log('📍 Added coordinates to address');
+        }
+
+        // Check for duplicate addresses
+        const isDuplicate = guestUser.address.some(addr => 
+            addr.street === newAddress.street &&
+            addr.city === newAddress.city &&
+            addr.state === newAddress.state &&
+            addr.zipcode === newAddress.zipcode &&
+            addr.country === newAddress.country
+        );
+
+        if (isDuplicate) {
+            console.log('⚠️  Duplicate address detected, not adding');
+            return res.status(400).json({ 
+                message: "This address already exists",
+                address: guestUser.address 
+            });
+        }
 
         // ✅ Push the new address to the array
-        guestUser.address.push({ street, city, state, zipcode, country, latitude, longitude });
+        guestUser.address.push(newAddress);
+        console.log(`✅ Added new address. Total addresses: ${guestUser.address.length}`);
 
-        // ✅ Save updated guest user data
-        await guestUser.save();
+        // ✅ Save updated guest user data with better error handling
+        try {
+            await guestUser.save();
+            console.log('✅ Guest user data saved successfully');
+        } catch (saveError) {
+            console.error('❌ Error saving to database:', saveError);
+            if (saveError.name === 'ValidationError') {
+                return res.status(400).json({ 
+                    message: "Validation error: " + Object.values(saveError.errors).map(e => e.message).join(', ')
+                });
+            }
+            throw saveError;
+        }
 
-        res.status(200).json({ message: "Guest address saved successfully!", address: guestUser.address });
+        console.log('🎉 Guest address saved successfully');
+        res.status(200).json({ 
+            message: "Guest address saved successfully!", 
+            address: guestUser.address,
+            success: true
+        });
+        
     } catch (error) {
-        console.error("Error saving guest address:", error);
-        res.status(500).json({ message: "Server error!" });
+        console.error("❌ Error saving guest address:", {
+            error: error.message,
+            stack: error.stack,
+            timestamp: new Date().toISOString(),
+            requestBody: { ...req.body, phone: req.body.phone ? '***' : undefined }
+        });
+        
+        // Send appropriate error response
+        if (error.name === 'MongoError' || error.name === 'MongooseError') {
+            res.status(500).json({ message: "Database error occurred. Please try again." });
+        } else if (error.name === 'ValidationError') {
+            res.status(400).json({ message: "Invalid data provided." });
+        } else {
+            res.status(500).json({ message: "Server error occurred. Please try again." });
+        }
     }
 });
 
