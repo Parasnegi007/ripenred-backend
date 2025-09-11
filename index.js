@@ -16,10 +16,12 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 
-// Temporarily disable CSP for debugging
+// Temporarily disable all CSP for seller dashboard debugging
 app.use(helmet({
   contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: false,
+  hsts: false // Also disable HSTS for now
 }));
 
 // Enable compression
@@ -126,9 +128,30 @@ app.use('/store/assets/images', express.static(path.join(__dirname, '../store/as
 app.use('/assets', express.static(path.join(__dirname, 'assets'))); // 🔹 Backend Assets Route for Email Images
 app.use("/api/sellers", sellerRoutes);
 
-// 🔄 Serve seller dashboard as static files
-app.use('/seller-dashboard', express.static(path.join(__dirname, '../seller-dashboard')));
-app.use('/seller', express.static(path.join(__dirname, '../seller-dashboard')));
+// 🔄 Serve seller dashboard as static files with proper MIME types
+app.use('/seller-dashboard', (req, res, next) => {
+  // Set proper MIME type for JavaScript files
+  if (req.path.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  } else if (req.path.endsWith('.css')) {
+    res.setHeader('Content-Type', 'text/css');
+  } else if (req.path.endsWith('.html')) {
+    res.setHeader('Content-Type', 'text/html');
+  }
+  next();
+}, express.static(path.join(__dirname, '../seller-dashboard')));
+
+app.use('/seller', (req, res, next) => {
+  // Set proper MIME type for JavaScript files
+  if (req.path.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  } else if (req.path.endsWith('.css')) {
+    res.setHeader('Content-Type', 'text/css');
+  } else if (req.path.endsWith('.html')) {
+    res.setHeader('Content-Type', 'text/html');
+  }
+  next();
+}, express.static(path.join(__dirname, '../seller-dashboard')));
 
 // 🔄 Serve main store as static files  
 app.use('/store', express.static(path.join(__dirname, '../store')));
